@@ -1,4 +1,4 @@
-# individual community db
+# db layout
 
 tables:
 metadata/columns: id (uuid), community name, readable id (8 digit #)
