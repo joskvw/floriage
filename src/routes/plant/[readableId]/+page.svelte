@@ -1,6 +1,6 @@
 <script>
+	import dayjs from 'dayjs';
 	export let data;
-	console.log(data);
 </script>
 
 <div>
@@ -10,7 +10,7 @@
 		<button class="bigButton sMargin" id="activeDisplay">2 days</button>
 	</div>
 	<div class="editor">
-		<form method="post">
+		<form method="post" action="?/post">
 			<textarea placeholder="u should say something" name="content" />
 			<br />
 			<input type="text" name="auth" hidden value={'test'} />
@@ -18,14 +18,16 @@
 		</form>
 	</div>
 	<div>
-		<div class="post">
-			<div class="author">j</div>
-			<div class="content">
-				Lorem ipsum dolor sit amet consectetur, adipisicing elit. Porro provident beatae temporibus
-				laboriosam, ad consequatur ratione unde! Doloribus nobis totam nesciunt iste cupiditate
-				dolore dolorum officiis repellendus voluptatum, esse exercitationem!
+		{#each data.posts as post}
+			<div class="post">
+				<div class="author">
+					{post.author} - {dayjs(post.id / 1000000).format('DD/MM/YYYY hh:mm')}
+				</div>
+				<div class="content">
+					{post.content}
+				</div>
 			</div>
-		</div>
+		{/each}
 	</div>
 </div>
 
