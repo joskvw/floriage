@@ -35,5 +35,5 @@ input {
 h1,
 h2 {
 	font-family: silkscreen, 'Courier New', Courier, monospace;
-	line-height: 1.25rem;
+	line-height: 100%;
 }

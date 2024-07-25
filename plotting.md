@@ -13,7 +13,7 @@ on login check to see if the current time is past the active time; active time i
 
 if the current time is before the vacation end time, the user is not allowed to access the community. Setting a vacation adds the vacation length (+ 2 day?) to the active time
 
-## Secret phrase auth system
+## Secret phrase auth system (DEAD, difficult to understand and not all that secure )
 
 Instead making a good authentication system, I'm going to make an interesting one.
 
@@ -44,5 +44,7 @@ verbs: 1500
 
 Formats:
 
-but the (noun) (verb)s in (adjective) (noun)
+but the (noun) (adjective) (verb)s
 1300 x 1500 x 1500 = 2925000000 = ~31 bits of security
+
+## Old discord style username + password auth

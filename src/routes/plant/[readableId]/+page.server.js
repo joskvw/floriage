@@ -1,5 +1,5 @@
 import knex from 'knex';
-import crypto from 'crypto';
+import snowfake from '$lib/snowfake.js';
 
 const db = knex({
 	client: 'better-sqlite3',
@@ -39,7 +39,7 @@ export const actions = {
 	post: async (event) => {
 		let b = Object.fromEntries(new URLSearchParams(await event.request.text()));
 		let post = {
-			id: parseInt(`${Date.now()}${crypto.randomInt(100000, 999999)}`),
+			id: snowfake.generateId(),
 			content: b.content,
 			author: 42,
 			community: parseInt(event.params.readableId)

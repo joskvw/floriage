@@ -1,18 +1,11 @@
-# create-svelte
+# floriage
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+a more plant-like social media platform
 
-## Creating a project
+## social media sorta sucks
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+my solution is simple: apply MAD (mutually assured destruction) to social media communities.\
+by giving every member of a community the option to instantly & permanently destroy that community, things will probably get better
 
 ## Developing
 

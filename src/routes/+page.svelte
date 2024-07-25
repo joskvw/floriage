@@ -1,5 +1,5 @@
 <script>
-	let username;
+	/*let username;
 	let publicPhrase = '';
 	function randomSecretPhrase() {}
 	async function digestMessage() {
@@ -21,32 +21,51 @@
 			'A lone tree in the gales'
 		];
 		publicPhrase = phrases[i];
-	}
+	}*/
+	let validUsername = /[A-z]{1, 16}/;
+	let validPassword = /.{8,}/;
 </script>
 
-<h1>floriage</h1>
+<h1>floriage: login/signup</h1>
 <div class="sMargin">
-	<h2 class="sMargin">login/signup</h2>
-	<input
-		type="text"
-		name="name"
-		placeholder="what's your username?"
-		class="sMargin"
-		bind:value={username}
-	/>
-	<br />
-	<button class="bigButton sMargin" on:click={digestMessage}>Next</button>
-	<br />
-	{#if publicPhrase !== ''}
-		<div>{publicPhrase}</div>
-		<form method="post">
-			<input type="text" name="name" placeholder="enter your passphrase" class="sMargin" />
-			<br />
-			<input type="submit" class="bigButton sMargin" value="login" />
-		</form>
-	{/if}
-	<br />
+	<form method="post">
+		<div class="horizontalButtonGroup">
+			<!--TODO: make this work well with password managers & switch fields when "#" is pressed-->
+			<input type="text" name="username" placeholder="username" class="sYMargin" />
+			<span
+				class="sYMargin"
+				style="width: fit-content; text-align: right; background-color: white;"
+			>
+				#</span
+			>
+			<input
+				type="text"
+				name="discriminator"
+				placeholder="42"
+				class="sYMargin"
+				style="width: 3ch;"
+				maxlength="2"
+				pattern="(\d\d)|(\d)"
+			/>
+		</div>
+		<input type="password" name="password" placeholder="password" class="sYMargin" />
+		<br />
+		<div class="horizontalButtonGroup">
+			<button formaction="?/login" class="bigButton sMargin">login</button>
+			<button formaction="?/signup" class="bigButton sMargin">signup</button>
+		</div>
+	</form>
 </div>
 
 <style>
+	.sYMargin {
+		margin: 0.2rem 0;
+	}
+	form * {
+		font-family: silkscreen, 'Courier New', Courier, monospace;
+		font-size: 1.75rem;
+	}
+	form input {
+		width: 100%;
+	}
 </style>
