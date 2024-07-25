@@ -44,5 +44,5 @@ verbs: 1500
 
 Formats:
 
-but the (noun) (verb)s in (adjective)
+but the (noun) (verb)s in (adjective) (noun)
 1300 x 1500 x 1500 = 2925000000 = ~31 bits of security
