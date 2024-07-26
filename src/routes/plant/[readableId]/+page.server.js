@@ -7,12 +7,8 @@ const db = knex({
 		filename: './db.sqlite'
 	}
 });
-
+createTables();
 async function createTables() {
-	await db.schema.createTable('users', (t) => {
-		t.bigint('id'); // snowfake id: unix timestamp, then a 6 random digits
-		t.text('username'); // username: can overlap in global db but not within a community (irc rules)
-	});
 	await db.schema.createTable('communities', (t) => {
 		t.bigint('id'); // snowfake id
 	});
