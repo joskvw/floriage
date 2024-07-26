@@ -2,6 +2,9 @@
 	import dayjs from 'dayjs';
 	export let data;
 	export let form;
+	function expandPost(i) {
+		console.log(i.target);
+	}
 </script>
 
 <div>
@@ -23,14 +26,22 @@
 		</form>
 	</div>
 	<div class="sMargin">
-		{#each data.posts as post}
+		{#each data.posts as post, i}
 			<div class="post">
 				<div class="author">
-					{post.author} - {dayjs(post.id / 1000000).format('DD/MM/YYYY hh:mm')}
+					{post.author} - {dayjs(post.id).format('DD/MM/YYYY hh:mm')}
 				</div>
-				<div class="content">
-					{post.content}
-				</div>
+				{#if post.content.length > 320}
+					<div class="content">
+						{post.content.substring(0, 320)}<span id="post-{i}">...</span>
+						<br />
+						<button class="smallButton" on:click={expandPost} post={i}>read more</button>
+					</div>
+				{:else}
+					<div class="content">
+						{post.content}
+					</div>
+				{/if}
 			</div>
 		{/each}
 	</div>
@@ -49,8 +60,9 @@
 		font-family: silkscreen, 'Courier New', Courier, monospace;
 	}
 	.post .content {
-		white-space: pre;
-		font-family: 'Courier New', Courier, monospace;
+		white-space: pre-wrap;
+		font-family: tiny5, 'Courier New', Courier, monospace;
+		word-break: break-all;
 	}
 	textarea {
 		aspect-ratio: 4/3;

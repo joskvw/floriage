@@ -11,16 +11,15 @@ const db = knex({
 db.schema.hasTable('posts').then(async function (exists) {
 	if (!exists) {
 		return await db.schema.createTable('posts', (t) => {
-			t.bigint('id'); // snowfake id
+			t.parseInt('id'); // snowfake id
 			t.text('content'); // textual content of the post
-			t.bigint('author'); // the authors id
-			t.bigint('community'); // the community id
+			t.parseInt('author'); // the authors id
+			t.parseInt('community'); // the community id
 		});
 	}
 });
 
 export async function load({ params, cookies }) {
-	params.readableId;
 	return {
 		authToken: cookies.get('authToken'),
 		posts: await db('posts')
@@ -29,11 +28,13 @@ export async function load({ params, cookies }) {
 			})
 			.select('*')
 			.orderBy('id', 'desc'),
-		name: await db('communities')
-			.where({
-				id: parseInt(params.readableId)
-			})
-			.select('name')[0]
+		name: (
+			await db('communities')
+				.where({
+					id: parseInt(params.readableId)
+				})
+				.select('*')
+		)[0].name
 	};
 }
 export const actions = {
