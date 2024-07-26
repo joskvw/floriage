@@ -1,9 +1,11 @@
 <script>
 	import dayjs from 'dayjs';
 	export let data;
+	export let form;
 </script>
 
 <div>
+	<h2>{data.name}</h2>
 	<div class="horizontalButtonGroup">
 		<button class="bigButton sMargin" id="vacationButton">vacation</button>
 		<button class="bigButton sMargin" id="uprootButton">uproot</button>
@@ -13,7 +15,10 @@
 		<form method="post" action="?/post">
 			<textarea placeholder="u should say something" name="content" />
 			<br />
-			<input type="text" name="auth" hidden value={'test'} />
+			<input type="text" name="authToken" hidden value={data.authToken} />
+			{#if form && !form.success}
+				<div class="error">{form.error}</div>
+			{/if}
 			<input type="submit" value="submit" class="bigButton" />
 		</form>
 	</div>

@@ -10,15 +10,15 @@ const db = knex({
 		filename: './db.sqlite'
 	}
 });
-
-async function createTable() {
-	await db.schema.createTable('users', (t) => {
-		t.bigint('id'); // snowfake id: unix timestamp, then a 6 random digits
-		t.text('username'); // username: can overlap in global db but not within a community (irc/discord-eque)
-		t.text('password');
-	});
-}
-
+db.schema.hasTable('users').then(async function (exists) {
+	if (!exists) {
+		return await db.schema.createTable('users', (t) => {
+			t.bigint('id'); // snowfake id: unix timestamp, then a 6 random digits
+			t.text('username'); // username: contains discriminator (username)#(discriminator)
+			t.text('password'); // hashed password
+		});
+	}
+});
 export const actions = {
 	login: async (event) => {
 		console.log(Object.fromEntries(new URLSearchParams(await event.request.text())));
@@ -26,7 +26,7 @@ export const actions = {
 	signup: async (event) => {
 		let b = Object.fromEntries(new URLSearchParams(await event.request.text()));
 		let username = b.username.toLowerCase();
-		if (username.length > 16 || username.match(/^[a-z]/) === null || username === '') {
+		if (username.length > 16 || username.match(/[^a-z]/) !== null || username === '') {
 			return {
 				success: false,
 				error: 'Your username can only contain english letters and is limited to 16 characters'

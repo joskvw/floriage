@@ -1,5 +1,6 @@
 import knex from 'knex';
-import snowfake from '$lib/snowfake.js';
+import { generateId } from '$lib/snowfake.js';
+import { checkJwt } from '../../../lib/token';
 
 const db = knex({
 	client: 'better-sqlite3',
@@ -7,37 +8,45 @@ const db = knex({
 		filename: './db.sqlite'
 	}
 });
-createTables();
-async function createTables() {
-	await db.schema.createTable('communities', (t) => {
-		t.bigint('id'); // snowfake id
-	});
-	await db.schema.createTable('posts', (t) => {
-		t.bigint('id'); // snowfake id
-		t.text('content'); // textual content of the post
-		t.bigint('author'); // the authors id
-		t.bigint('community'); // the community id
-	});
-}
+db.schema.hasTable('posts').then(async function (exists) {
+	if (!exists) {
+		return await db.schema.createTable('posts', (t) => {
+			t.bigint('id'); // snowfake id
+			t.text('content'); // textual content of the post
+			t.bigint('author'); // the authors id
+			t.bigint('community'); // the community id
+		});
+	}
+});
 
 export async function load({ params, cookies }) {
 	params.readableId;
 	return {
+		authToken: cookies.get('authToken'),
 		posts: await db('posts')
 			.where({
-				community: params.readableId
+				community: parseInt(params.readableId)
 			})
 			.select('*')
-			.orderBy('id', 'desc')
+			.orderBy('id', 'desc'),
+		name: await db('communities')
+			.where({
+				id: parseInt(params.readableId)
+			})
+			.select('name')[0]
 	};
 }
 export const actions = {
 	post: async (event) => {
 		let b = Object.fromEntries(new URLSearchParams(await event.request.text()));
+		let id = await checkJwt(b.authToken);
+		if (id === false) {
+			return { success: false, error: "You don't see to be logged in :(" };
+		}
 		let post = {
-			id: snowfake.generateId(),
+			id: generateId(),
 			content: b.content,
-			author: 42,
+			author: id,
 			community: parseInt(event.params.readableId)
 		};
 		await db('posts').insert(post);

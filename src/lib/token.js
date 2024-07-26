@@ -21,7 +21,11 @@ async function issueJwt(user) {
  * @returns the user ID contained by the now verified JWT
  */
 async function checkJwt(token) {
-	const secret = new TextEncoder().encode(env.JWT_PRIVATE_KEY);
-	const { payload } = await jose.jwtVerify(token, secret);
-	return payload.user;
+	try {
+		const secret = new TextEncoder().encode(env.JWT_PRIVATE_KEY);
+		const { payload } = await jose.jwtVerify(token, secret);
+		return payload.user;
+	} catch {
+		return false;
+	}
 }

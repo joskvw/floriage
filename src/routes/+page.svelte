@@ -59,18 +59,7 @@
 </div>
 
 <style>
-	.error {
-		color: hsl(0, 85%, 45%);
-		font-size: 1.25rem;
-	}
 	.sYMargin {
 		margin: 0.2rem 0;
-	}
-	form * {
-		font-family: silkscreen, 'Courier New', Courier, monospace;
-		font-size: 1.75rem;
-	}
-	form input {
-		width: 100%;
 	}
 </style>
