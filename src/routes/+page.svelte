@@ -22,8 +22,8 @@
 		];
 		publicPhrase = phrases[i];
 	}*/
-	let validUsername = /[A-z]{1, 16}/;
-	let validPassword = /.{8,}/;
+	export let form;
+	console.log(form);
 </script>
 
 <h1>floriage: login/signup</h1>
@@ -49,7 +49,9 @@
 			/>
 		</div>
 		<input type="password" name="password" placeholder="password" class="sYMargin" />
-		<br />
+		{#if form && !form.success}
+			<div class="error">{form.error}</div>
+		{/if}
 		<div class="horizontalButtonGroup">
 			<button formaction="?/login" class="bigButton sMargin">login</button>
 			<button formaction="?/signup" class="bigButton sMargin">signup</button>
@@ -58,6 +60,10 @@
 </div>
 
 <style>
+	.error {
+		color: hsl(0, 85%, 45%);
+		font-size: 1.25rem;
+	}
 	.sYMargin {
 		margin: 0.2rem 0;
 	}
