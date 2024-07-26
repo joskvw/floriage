@@ -1,7 +1,8 @@
 import knex from 'knex';
 import { generateId } from '$lib/snowfake.js';
 import crypto from 'crypto';
-import { json } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
+import { checkJwt, issueJwt } from '../lib/token';
 
 const db = knex({
 	client: 'better-sqlite3',
@@ -43,10 +44,7 @@ export const actions = {
 			password: await crypto.scryptSync(b.password, crypto.randomBytes(16), 64).toString('hex') // switch away from sync at some point
 		};
 		await db('users').insert(user);
-		return await db('users')
-			.where({
-				id: user.id
-			})
-			.select('*');
+		event.cookies.set('authToken', await issueJwt(user), { path: '/' });
+		throw redirect(303, '/garden');
 	}
 };

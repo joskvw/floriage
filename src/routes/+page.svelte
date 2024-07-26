@@ -23,7 +23,6 @@
 		publicPhrase = phrases[i];
 	}*/
 	export let form;
-	console.log(form);
 </script>
 
 <h1>floriage: login/signup</h1>
