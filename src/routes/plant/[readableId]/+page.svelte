@@ -2,8 +2,17 @@
 	import dayjs from 'dayjs';
 	export let data;
 	export let form;
-	function expandPost(i) {
-		console.log(i.target);
+	const expandLength = 297;
+	const dotdotdot = '...';
+	function togglePost(i, content) {
+		if (document.getElementById('post-' + i).innerText.length === expandLength + dotdotdot.length) {
+			document.getElementById('post-' + i).innerText = content;
+			document.getElementById('expand-' + i).innerText = 'show less';
+		} else {
+			document.getElementById('expand-' + i).innerText = 'read more';
+			document.getElementById('post-' + i).innerText =
+				content.substring(0, expandLength) + dotdotdot;
+		}
 	}
 </script>
 
@@ -31,11 +40,16 @@
 				<div class="author">
 					{post.author} - {dayjs(post.id).format('DD/MM/YYYY hh:mm')}
 				</div>
-				{#if post.content.length > 320}
+				{#if post.content.length > expandLength + 100}
 					<div class="content">
-						{post.content.substring(0, 320)}<span id="post-{i}">...</span>
-						<br />
-						<button class="smallButton" on:click={expandPost} post={i}>read more</button>
+						<div id="post-{i}">{post.content.substring(0, expandLength)}{dotdotdot}</div>
+						<button
+							class="smallButton"
+							id="expand-{i}"
+							on:click={() => {
+								togglePost(i, post.content);
+							}}>read more</button
+						>
 					</div>
 				{:else}
 					<div class="content">

@@ -16,6 +16,15 @@ db.schema.hasTable('users').then(async function (exists) {
 			t.bigint('id'); // snowfake id: unix timestamp, then a 6 random digits
 			t.text('username'); // username: contains discriminator (username)#(discriminator)
 			t.text('password'); // hashed password
+			t.json('communities'); // weird-ish way to do things, format displayed below
+			/*
+			{
+				<community ID>:{
+					activeExpire: <unix timestamp: when the user will be kicked from the community>,
+					vacationExpire: <unix timestamp: when the user's vacation will end and they will be allowed to post again community>
+				}
+			}
+			*/
 		});
 	}
 });

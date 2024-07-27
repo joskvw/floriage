@@ -1,6 +1,7 @@
 <script>
 	export let data;
 	export let form;
+	let onboarding = true; // change to url thing at some point
 </script>
 
 <h1>the garden</h1>

@@ -1,6 +1,6 @@
 import knex from 'knex';
 import { checkJwt } from '$lib/token.js';
-import { generateId } from '../../lib/snowfake';
+import { generateId } from '$lib/snowfake.js';
 import { redirect } from '@sveltejs/kit';
 
 const db = knex({
