@@ -34,7 +34,7 @@ export async function load({ cookies, url }) {
 }
 export const actions = {
 	createCommunity: async (event) => {
-		let b = Object.fromEntries(new URLSearchParams(await event.request.text()));
+		let b = paramsToObject(await event.request.text());
 		let community = {
 			id: generateId(),
 			name: b.name

@@ -8,4 +8,13 @@ const db = knex({
 async function getUser(id) {
 	return (await db('users').where({ id: id }).select('id', 'username', 'communities'))[0];
 }
-export { getUser };
+async function getCommunity(id) {
+	return (
+		await db('communities')
+			.where({
+				id: id
+			})
+			.select('*')
+	)[0];
+}
+export { getUser, getCommunity };
