@@ -23,9 +23,6 @@
 		publicPhrase = phrases[i];
 	}*/
 	export let form;
-	function generatePassphrase() {
-		return 'multi word passphrase here';
-	}
 </script>
 
 <h1>floriage: login/signup</h1>
@@ -50,14 +47,10 @@
 				pattern="(\d\d)|(\d)"
 			/>
 		</div>-->
-		<input
-			type="text"
-			name="passphrase"
-			placeholder="password"
-			class="sYMargin"
-			disabled
-			value={generatePassphrase()}
-		/>
+		<div class="horizontalButtonGroup">
+			<input type="text" name="password" placeholder="passphrase" class="sYMargin" />
+		</div>
+
 		{#if form && !form.success}
 			<div class="error">{form.error}</div>
 		{/if}

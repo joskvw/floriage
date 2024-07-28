@@ -2,6 +2,7 @@ import knex from 'knex';
 import { checkJwt } from '$lib/token.js';
 import { generateId } from '$lib/snowfake.js';
 import { redirect } from '@sveltejs/kit';
+import { _takePassphrase } from '../+page.server.js';
 
 const db = knex({
 	client: 'better-sqlite3',
