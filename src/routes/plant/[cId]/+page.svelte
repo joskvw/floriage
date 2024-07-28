@@ -1,9 +1,7 @@
 <script>
 	import dayjs from 'dayjs';
-	import DJSTimezone from 'dayjs/plugin/timezone.js';
-	import DJSUtc from 'dayjs/plugin/utc';
-	dayjs.extend(DJSUtc);
-	dayjs.extend(DJSTimezone);
+	import DJSRelativeTime from 'dayjs/plugin/relativeTime.js';
+	dayjs.extend(DJSRelativeTime);
 	export let data;
 	export let form;
 	const expandLength = 297;
@@ -26,7 +24,8 @@
 		<div class="horizontalButtonGroup">
 			<button class="bigButton sMargin" id="vacationButton">vacation</button>
 			<button class="bigButton sMargin" id="uprootButton">uproot</button>
-			<button class="bigButton sMargin" id="activeDisplay">2 days</button>
+			<button class="bigButton sMargin" id="activeDisplay">{dayjs(data.pc.expiry).fromNow()}</button
+			>
 		</div>
 		<div class="sMargin">
 			<form method="post" action="?/post">
@@ -64,7 +63,7 @@
 				</div>
 			{/each}
 		</div>
-	{:else}<!-- if data.pc.invite-->
+	{:else}<!-- if data.invite-->
 		<h3>You've received an invite to</h3>
 		<h2>{data.name}</h2>
 		<div>Would you like to accept it?</div>
@@ -73,7 +72,7 @@
 			<button class="bigButton sMargin">Yes!</button>
 		</form>
 		<div>
-			This invite expires next {dayjs(data.pc.invite).add(7, 'day').format('dddd @ ha')}
+			This invite expires next <b>{dayjs(data.invite).add(7, 'day').format('dddd @ ha')}</b>
 		</div>
 	{/if}
 </div>

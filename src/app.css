@@ -19,6 +19,13 @@
 		U+FFFD;
 }
 html {
+	max-width: 60ch;
+	padding: 1em;
+	margin: auto;
+	line-height: 1.75;
+	font-size: 1.25rem;
+	background-color: hsl(54, 85%, 74%);
+	color: hsl(131, 30%, 25%);
 	font-family: tiny5, monospace;
 }
 .horizontalButtonGroup {
@@ -30,7 +37,7 @@ html {
 .bigButton,
 .smallButton {
 	border: none;
-	color: hsl(0, 0%, 5%);
+	color: inherit;
 	padding: 0.2rem 0.4rem;
 	font-family: silkscreen, 'Courier New', Courier, monospace;
 	text-align: center;
@@ -46,6 +53,7 @@ html {
 }
 textarea,
 input {
+	color: inherit;
 	border: none;
 	box-sizing: border-box;
 	padding: 0.2rem 0.4rem;

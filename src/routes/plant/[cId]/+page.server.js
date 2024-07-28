@@ -3,6 +3,7 @@ import { generateId } from '$lib/snowfake.js';
 import { checkJwt } from '../../../lib/token';
 import { getUser, getCommunity } from '$lib/dba';
 import { paramsToObject } from '$lib/SPObject.js';
+import dayjs from 'dayjs';
 
 const db = knex({
 	client: 'better-sqlite3',
@@ -37,10 +38,9 @@ export async function load({ params, cookies, url }) {
 	user.communities = JSON.parse(user.communities);
 	let c = user.communities[communityId];
 	c ??= {
-		member: false,
-		invite: paramsToObject(url.searchParams).invite
+		expiry: 0
 	};
-	if (c.member) {
+	if (c.expiry > Date.now()) {
 		return {
 			authToken: token,
 			posts: await db('posts')
@@ -56,21 +56,42 @@ export async function load({ params, cookies, url }) {
 		return {
 			authToken: token,
 			pc: c,
+			invite: paramsToObject(url.searchParams).invite,
 			name: (await getCommunity(communityId)).name
 		};
 	}
 }
 export const actions = {
-	join: async (event) => {},
+	uproot: async (event) => {
+		let b = paramsToObject(await event.request.text());
+		let user = await getUser(await checkJwt(event.cookies.get('authToken')));
+		if (user && user.communities[event.params.cId].expiry > Date.now()) {
+			db('communities').where({ id: event.params.cId }).delete();
+		}
+	},
+	join: async (event) => {
+		let b = paramsToObject(await event.request.text());
+		let user = await getUser(await checkJwt(event.cookies.get('authToken')));
+		if (user) {
+			user.communities = JSON.parse(user.communities);
+			let invite = (await db('invites').where({ id: b.invite }).select('community'))[0];
+			invite ??= { community: event.params.cId }; // !!TESTING ONLY!!
+			user.communities[invite.community] = { expiry: dayjs().add(7, 'day').valueOf() };
+			await db('users')
+				.where({ id: user.id })
+				.update({ communities: JSON.stringify(user.communities) })
+				.select('*');
+		}
+	},
 	invite: async (event) => {
 		let b = paramsToObject(await event.request.text());
 		let user = await getUser(await checkJwt(event.cookies.get('authToken')));
 		user.communities = JSON.parse(user.communities);
 		let c = user.communities[b.community];
 		c ??= {
-			member: false
+			expiry: 0
 		};
-		if (c.member) {
+		if (c.expiry > Date.now()) {
 			let invite = {
 				id: generateId(),
 				community: b.community,
