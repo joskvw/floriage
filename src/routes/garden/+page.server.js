@@ -2,7 +2,9 @@ import knex from 'knex';
 import { checkJwt } from '$lib/token.js';
 import { generateId } from '$lib/snowfake.js';
 import { redirect } from '@sveltejs/kit';
-import { _takePassphrase } from '../+page.server.js';
+import { takePassphrase } from '../+page.server.js';
+import { paramsToObject } from '$lib/SPObject.js';
+import { getUser } from '$lib/dba.js';
 
 const db = knex({
 	client: 'better-sqlite3',
@@ -19,8 +21,16 @@ db.schema.hasTable('communities').then(async function (exists) {
 	}
 });
 
-export async function load({ cookies }) {
-	return { authToken: cookies.get('authToken') };
+export async function load({ cookies, url }) {
+	let token = cookies.get('authToken');
+	let d = {
+		authToken: token,
+		user: await getUser(await checkJwt(token))
+	};
+	if (paramsToObject(url.searchParams).onboard) {
+		d.passphrase = takePassphrase(paramsToObject(url.searchParams).onboard);
+	}
+	return d;
 }
 export const actions = {
 	createCommunity: async (event) => {

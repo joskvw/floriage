@@ -1,10 +1,17 @@
 <script>
 	export let data;
 	export let form;
-	let onboarding = true; // change to url thing at some point
 </script>
 
+<div>Hey {data.user.username.toUpperCase()}!</div>
 <h1>the garden</h1>
+{#if data.passphrase}
+	<div class="error">
+		Please save your passphrase:
+		<div><b><i>{data.passphrase}</i></b></div>
+		You won't be able to login without it!
+	</div>
+{/if}
 <h2>plant a seed!</h2>
 <form action="?/createCommunity" method="post">
 	<div class="horizontalButtonGroup">

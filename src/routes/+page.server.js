@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import { redirect } from '@sveltejs/kit';
 import { checkJwt, issueJwt } from '../lib/token';
 import wordlist from '$lib/wordlist.json';
+import { paramsToObject } from '$lib/SPObject.js';
 
 const db = knex({
 	client: 'better-sqlite3',
@@ -31,13 +32,27 @@ db.schema.hasTable('users').then(async function (exists) {
 });
 export const actions = {
 	login: async (event) => {
-		console.log(Object.fromEntries(new URLSearchParams(await event.request.text())));
+		let b = paramsToObject(await event.request.text());
+		console.log(b);
+		let user = (
+			await db('users')
+				.where({ username: b.username, password: await sha256(b.password) })
+				.select('*')
+		)[0];
+		if (user === undefined) {
+			return {
+				success: false,
+				error: 'The username and/or passphrase you entered where incorrect'
+			};
+		}
+		event.cookies.set('authToken', await issueJwt(user), { path: '/' });
+		redirect(303, '/garden'); // integrate system (url parameter?) so actions that require login won't need extra navigation
 	},
 	signup: async (event) => {
-		let b = Object.fromEntries(new URLSearchParams(await event.request.text()));
+		// password == passphrase
+		let b = paramsToObject(await event.request.text());
 		let username = b.username.toLowerCase();
 		let password = generatePassphrase();
-		console.log(password);
 		if (username === '') {
 			return {
 				success: false,
@@ -53,23 +68,27 @@ export const actions = {
 		let user = {
 			id: generateId(),
 			username: username,
-			password: await crypto.scryptSync(password, crypto.randomBytes(16), 64).toString('hex') // switch away from sync at some point
+			password: await sha256(password), // this is only acceptable because all passphrases have >64 bits of security
+			communities: {}
 		};
 		await db('users').insert(user);
 		event.cookies.set('authToken', await issueJwt(user), { path: '/' });
-		throw redirect(303, '/garden?onboard=' + givePassphrase(passphrase));
+		redirect(303, '/garden?onboard=' + givePassphrase(password));
 	}
 };
-passphraseMove = {}; // don't love this "solution"
+async function sha256(input) {
+	return crypto.createHash('sha256').update(input).digest('base64url');
+}
+let passphraseMove = {}; // don't love this "solution"
 function givePassphrase(passphrase) {
-	let secretId = crypto.randomInt(Number.MAX_SAFE_INTEGER);
+	let secretId = crypto.randomBytes(32).toString('base64url');
 	passphraseMove[secretId] = passphrase;
 	return secretId;
 }
-export { _takePassphrase };
-function _takePassphrase(id) {
-	let passphrase = passphraseMove[parseInt(id)];
-	passphraseMove[parseInt(id)] = 'INVALID';
+export { takePassphrase };
+function takePassphrase(id) {
+	let passphrase = passphraseMove[id];
+	passphraseMove[id] = 'Hope you saved it!';
 	return passphrase;
 }
 function generatePassphrase(length) {
