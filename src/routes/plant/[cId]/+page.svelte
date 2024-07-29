@@ -16,14 +16,21 @@
 				content.substring(0, expandLength) + dotdotdot;
 		}
 	}
+	function vacation() {
+		prompt('How many days would you like to go for?');
+	}
 </script>
 
 <div>
 	{#if data.posts}
 		<h2>{data.name}</h2>
 		<div class="horizontalButtonGroup">
-			<button class="bigButton sMargin" id="vacationButton">vacation</button>
-			<button class="bigButton sMargin" id="uprootButton">uproot</button>
+			<button class="bigButton sMargin" id="vacationButton" on:click={vacation}>vacation</button>
+			<form action="?/uproot" method="post">
+				<input type="text" name="authToken" hidden value={data.authToken} />
+				<button class="bigButton sMargin" id="uprootButton">uproot</button>
+			</form>
+
 			<button class="bigButton sMargin" id="activeDisplay">{dayjs(data.pc.expiry).fromNow()}</button
 			>
 		</div>
@@ -68,7 +75,8 @@
 		<h2>{data.name}</h2>
 		<div>Would you like to accept it?</div>
 		<form action="?/join" method="post">
-			<input type="text" name="invite" hidden />
+			<input type="text" name="authToken" hidden value={data.authToken} />
+			<input type="text" name="invite" hidden value={data.invite} />
 			<button class="bigButton sMargin">Yes!</button>
 		</form>
 		<div>

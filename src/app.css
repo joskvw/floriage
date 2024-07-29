@@ -78,3 +78,6 @@ h2 {
 	color: hsl(0, 85%, 45%);
 	font-size: 1.25rem;
 }
+a {
+	color: inherit;
+}

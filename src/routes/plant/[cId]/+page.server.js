@@ -62,19 +62,24 @@ export async function load({ params, cookies, url }) {
 	}
 }
 export const actions = {
+	vacation: async (event) => {
+		let b = paramsToObject(await event.request.text());
+		let user = await getUser(await checkJwt(b.authToken));
+	},
 	uproot: async (event) => {
 		let b = paramsToObject(await event.request.text());
-		let user = await getUser(await checkJwt(event.cookies.get('authToken')));
+		let user = await getUser(await checkJwt(b.authToken));
+		user.communities = JSON.parse(user.communities);
 		if (user && user.communities[event.params.cId].expiry > Date.now()) {
-			db('communities').where({ id: event.params.cId }).delete();
+			console.log(await db('communities').where({ id: event.params.cId }).delete());
 		}
 	},
 	join: async (event) => {
 		let b = paramsToObject(await event.request.text());
-		let user = await getUser(await checkJwt(event.cookies.get('authToken')));
+		let user = await getUser(await checkJwt(b.authToken));
 		if (user) {
 			user.communities = JSON.parse(user.communities);
-			let invite = (await db('invites').where({ id: b.invite }).select('community'))[0];
+			let invite = (await db('invites').where({ id: event.url.p }).select('community'))[0];
 			invite ??= { community: event.params.cId }; // !!TESTING ONLY!!
 			user.communities[invite.community] = { expiry: dayjs().add(7, 'day').valueOf() };
 			await db('users')
@@ -85,7 +90,7 @@ export const actions = {
 	},
 	invite: async (event) => {
 		let b = paramsToObject(await event.request.text());
-		let user = await getUser(await checkJwt(event.cookies.get('authToken')));
+		let user = await getUser(await checkJwt(b.authToken));
 		user.communities = JSON.parse(user.communities);
 		let c = user.communities[b.community];
 		c ??= {

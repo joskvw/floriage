@@ -1,4 +1,7 @@
 <script>
+	import dayjs from 'dayjs';
+	import DJSRelativeTime from 'dayjs/plugin/relativeTime.js';
+	dayjs.extend(DJSRelativeTime);
 	export let data;
 	export let form;
 </script>
@@ -25,8 +28,14 @@
 </form>
 <h2>current plants:</h2>
 <div>
-	{#each data.user.communities as community}
-		<div>{JSON.stringify(community)}</div>
+	{#each Object.keys(data.user.communities) as cId}
+		{#if data.user.communities[cId].name}
+			<a href={'/plant/' + cId}>
+				<h2>
+					{data.user.communities[cId].name};
+					<small>{dayjs(data.user.communities[cId].expiry).fromNow()}</small>
+				</h2>
+			</a>
+		{/if}
 	{/each}
 </div>
-<button class="bigButton">(community name here)</button>
