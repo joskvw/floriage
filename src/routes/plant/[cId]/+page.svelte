@@ -34,6 +34,10 @@
 			<button class="bigButton sMargin" id="activeDisplay">{dayjs(data.pc.expiry).fromNow()}</button
 			>
 		</div>
+		<form action="?/invite" method="post">
+			<button>create invite</button>
+			{#if form && form.inviteId}{/if}
+		</form>
 		<div class="sMargin">
 			<form method="post" action="?/post">
 				<textarea placeholder="u should say something" name="content" />
@@ -70,7 +74,7 @@
 				</div>
 			{/each}
 		</div>
-	{:else}<!-- if data.invite-->
+	{:else if data.invite}
 		<h3>You've received an invite to</h3>
 		<h2>{data.name}</h2>
 		<div>Would you like to accept it?</div>
@@ -82,6 +86,8 @@
 		<div>
 			This invite expires next <b>{dayjs(data.invite).add(7, 'day').format('dddd @ ha')}</b>
 		</div>
+	{:else}
+		<h2>You'll need an invite to access this community</h2>
 	{/if}
 </div>
 

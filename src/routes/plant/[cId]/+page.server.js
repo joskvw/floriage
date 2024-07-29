@@ -4,6 +4,7 @@ import { checkJwt } from '../../../lib/token';
 import { getUser, getCommunity } from '$lib/dba';
 import { paramsToObject } from '$lib/SPObject.js';
 import dayjs from 'dayjs';
+import { error } from '@sveltejs/kit';
 
 const db = knex({
 	client: 'better-sqlite3',
@@ -37,28 +38,37 @@ export async function load({ params, cookies, url }) {
 	let user = await getUser(await checkJwt(token));
 	user.communities = JSON.parse(user.communities);
 	let c = user.communities[communityId];
+	let cd = await getCommunity(communityId);
 	c ??= {
 		expiry: 0
 	};
 	if (c.expiry > Date.now()) {
-		return {
-			authToken: token,
-			posts: await db('posts')
-				.where({
-					community: communityId
-				})
-				.select('*')
-				.orderBy('id', 'desc'),
-			pc: c,
-			name: (await getCommunity(communityId)).name
-		};
+		if (cd) {
+			return {
+				authToken: token,
+				posts: await db('posts')
+					.where({
+						community: communityId
+					})
+					.select('*')
+					.orderBy('id', 'desc'),
+				pc: c,
+				name: cd.name
+			};
+		} else {
+			throw error(404, 'This community never existed... or did it?');
+		}
 	} else {
-		return {
-			authToken: token,
-			pc: c,
-			invite: paramsToObject(url.searchParams).invite,
-			name: (await getCommunity(communityId)).name
-		};
+		if (cd) {
+			return {
+				authToken: token,
+				pc: c,
+				invite: paramsToObject(url.searchParams).invite,
+				name: cd.name
+			};
+		} else {
+			throw error(404, 'This community never existed... or did it?');
+		}
 	}
 }
 export const actions = {
@@ -79,13 +89,19 @@ export const actions = {
 		let user = await getUser(await checkJwt(b.authToken));
 		if (user) {
 			user.communities = JSON.parse(user.communities);
-			let invite = (await db('invites').where({ id: event.url.p }).select('community'))[0];
-			invite ??= { community: event.params.cId }; // !!TESTING ONLY!!
-			user.communities[invite.community] = { expiry: dayjs().add(7, 'day').valueOf() };
-			await db('users')
-				.where({ id: user.id })
-				.update({ communities: JSON.stringify(user.communities) })
-				.select('*');
+			let invite = (await db('invites').where({ id: b.invite }).select('community'))[0];
+			//invite ??= { community: event.params.cId }; // !!TESTING ONLY!!
+			if (!invite || event.params.cId !== invite.community) {
+				error(403, "Something mischievous may be afoot... we're going blocking this request");
+			}
+			if (invite) {
+				user.communities[invite.community] = { expiry: dayjs().add(7, 'day').valueOf() };
+				await db('users')
+					.where({ id: user.id })
+					.update({ communities: JSON.stringify(user.communities) });
+			} else {
+				error(403, "Something mischievous may be afoot... we're going blocking this request");
+			}
 		}
 	},
 	invite: async (event) => {
@@ -102,7 +118,7 @@ export const actions = {
 				community: b.community,
 				creator: user.id
 			};
-			db('invites').insert(invite);
+			return { success: true, inviteId: await db('invites').insert(invite).select('id') };
 		}
 	},
 	post: async (event) => {
