@@ -22,6 +22,7 @@
 </script>
 
 <div>
+	<a href="/garden"><b>&#60;</b>back to the garden<b>&#62;</b></a>
 	{#if data.posts}
 		<h2>{data.name}</h2>
 		<div class="horizontalButtonGroup">
@@ -35,8 +36,15 @@
 			>
 		</div>
 		<form action="?/invite" method="post">
-			<button>create invite</button>
-			{#if form && form.inviteId}{/if}
+			<input type="text" name="authToken" hidden value={data.authToken} />
+			<button class="bigButton sMargin">create invite</button>
+			{#if form && form.inviteId}
+				<div class="sMargin">
+					Your invite link: <small
+						>https://oops.test/plant/1722295862951?invite={form.inviteId}</small
+					>
+				</div>
+			{/if}
 		</form>
 		<div class="sMargin">
 			<form method="post" action="?/post">
@@ -53,7 +61,7 @@
 			{#each data.posts as post, i}
 				<div class="post">
 					<div class="author">
-						{post.author} - {dayjs(post.id).format('DD/MM/YYYY hh:mm')}
+						{post.author} - {dayjs(post.id).fromNow()}
 					</div>
 					{#if post.content.length > expandLength + 100}
 						<div class="content">
@@ -71,6 +79,7 @@
 							{post.content}
 						</div>
 					{/if}
+					<div><a href="/replant/{post.id}">replant</a> - <a href="/chat/{post.id}">chat</a></div>
 				</div>
 			{/each}
 		</div>

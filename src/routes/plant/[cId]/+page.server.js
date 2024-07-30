@@ -4,7 +4,7 @@ import { checkJwt } from '../../../lib/token';
 import { getUser, getCommunity } from '$lib/dba';
 import { paramsToObject } from '$lib/SPObject.js';
 import dayjs from 'dayjs';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 
 const db = knex({
 	client: 'better-sqlite3',
@@ -36,6 +36,9 @@ export async function load({ params, cookies, url }) {
 	let communityId = parseInt(params.cId);
 	let token = cookies.get('authToken');
 	let user = await getUser(await checkJwt(token));
+	if (!user) {
+		redirect(302, '/');
+	}
 	user.communities = JSON.parse(user.communities);
 	let c = user.communities[communityId];
 	let cd = await getCommunity(communityId);
@@ -43,15 +46,24 @@ export async function load({ params, cookies, url }) {
 		expiry: 0
 	};
 	if (c.expiry > Date.now()) {
+		let posts = await db('posts')
+			.where({
+				community: communityId
+			})
+			.select('*')
+			.orderBy('id', 'desc');
+		let userTable = {};
+		for (let i in posts) {
+			let a = posts[i].author;
+			if (!userTable[a]) {
+				userTable[a] = (await getUser(a)).username; // temporary solution
+			}
+			posts[i].author = userTable[a];
+		}
 		if (cd) {
 			return {
 				authToken: token,
-				posts: await db('posts')
-					.where({
-						community: communityId
-					})
-					.select('*')
-					.orderBy('id', 'desc'),
+				posts: posts,
 				pc: c,
 				name: cd.name
 			};
@@ -90,8 +102,9 @@ export const actions = {
 		if (user) {
 			user.communities = JSON.parse(user.communities);
 			let invite = (await db('invites').where({ id: b.invite }).select('community'))[0];
+			console.log(await db('invites').where({ id: b.invite }).select('community'));
 			//invite ??= { community: event.params.cId }; // !!TESTING ONLY!!
-			if (!invite || event.params.cId !== invite.community) {
+			if (!invite || event.params.cId != invite.community) {
 				error(403, "Something mischievous may be afoot... we're going blocking this request");
 			}
 			if (invite) {
@@ -99,8 +112,6 @@ export const actions = {
 				await db('users')
 					.where({ id: user.id })
 					.update({ communities: JSON.stringify(user.communities) });
-			} else {
-				error(403, "Something mischievous may be afoot... we're going blocking this request");
 			}
 		}
 	},
@@ -108,30 +119,41 @@ export const actions = {
 		let b = paramsToObject(await event.request.text());
 		let user = await getUser(await checkJwt(b.authToken));
 		user.communities = JSON.parse(user.communities);
-		let c = user.communities[b.community];
+		let communityId = event.params.cId;
+		let c = user.communities[communityId];
 		c ??= {
 			expiry: 0
 		};
 		if (c.expiry > Date.now()) {
 			let invite = {
 				id: generateId(),
-				community: b.community,
+				community: communityId,
 				creator: user.id
 			};
-			return { success: true, inviteId: await db('invites').insert(invite).select('id') };
+			await db('invites').insert(invite);
+			return { success: true, inviteId: invite.id };
 		}
 	},
 	post: async (event) => {
 		let b = paramsToObject(await event.request.text());
-		let id = await checkJwt(b.authToken);
-		if (id === false) {
-			return { success: false, error: "You don't see to be logged in :(" };
+		let user = await getUser(await checkJwt(b.authToken));
+		if (user & (JSON.parse(user.communities)[event.params.cId].expiry > Date.now())) {
+			return {
+				success: false,
+				error: "You either aren't logged in or aren't a member of this community :("
+			};
+		}
+		if (b.content.length === 0) {
+			return {
+				success: false,
+				error: "Your post doesn't have any content??"
+			};
 		}
 		let post = {
 			id: generateId(),
 			content: b.content,
-			author: id,
-			community: parseInt(event.params.cId)
+			author: user.id,
+			community: event.params.cId
 		};
 		await db('posts').insert(post);
 	}
