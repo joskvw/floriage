@@ -17,4 +17,13 @@ async function getCommunity(id) {
 			.select('*')
 	)[0];
 }
-export { getUser, getCommunity };
+async function getPost(id) {
+	return (
+		await db('posts')
+			.where({
+				id: id
+			})
+			.select('*')
+	)[0];
+}
+export { getUser, getCommunity, getPost };

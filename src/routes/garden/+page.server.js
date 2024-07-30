@@ -5,6 +5,7 @@ import { redirect } from '@sveltejs/kit';
 import { takePassphrase } from '../+page.server.js';
 import { paramsToObject } from '$lib/SPObject.js';
 import { getUser, getCommunity } from '$lib/dba.js';
+import dayjs from 'dayjs';
 
 const db = knex({
 	client: 'better-sqlite3',
@@ -45,11 +46,20 @@ export async function load({ cookies, url }) {
 export const actions = {
 	createCommunity: async (event) => {
 		let b = paramsToObject(await event.request.text());
+		let user = await getUser(await checkJwt(b.authToken));
+		if (!user) {
+			error(403, "You aren't logged in...");
+		}
+		user.communities = JSON.parse(user.communities);
 		let community = {
 			id: generateId(),
 			name: b.name
 		};
+		user.communities[community.id] = { expiry: dayjs().add(7, 'day').valueOf() };
+		await db('users')
+			.where({ id: user.id })
+			.update({ communities: JSON.stringify(user.communities) });
 		await db('communities').insert(community);
-		throw redirect(303, `/plant/${community.id}`);
+		redirect(303, `/plant/${community.id}`);
 	}
 };

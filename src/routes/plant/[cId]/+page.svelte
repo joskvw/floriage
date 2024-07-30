@@ -1,4 +1,5 @@
 <script>
+	import { sfTimestamp } from '$lib/snowfake.js';
 	import dayjs from 'dayjs';
 	import DJSRelativeTime from 'dayjs/plugin/relativeTime.js';
 	dayjs.extend(DJSRelativeTime);
@@ -61,7 +62,7 @@
 			{#each data.posts as post, i}
 				<div class="post">
 					<div class="author">
-						{post.author} - {dayjs(post.id).fromNow()}
+						{post.author} - {dayjs(sfTimestamp(post.id)).fromNow()}
 					</div>
 					{#if post.content.length > expandLength + 100}
 						<div class="content">
@@ -93,7 +94,9 @@
 			<button class="bigButton sMargin">Yes!</button>
 		</form>
 		<div>
-			This invite expires next <b>{dayjs(data.invite).add(7, 'day').format('dddd @ ha')}</b>
+			This invite expires next <b
+				>{dayjs(sfTimestamp(data.invite)).add(7, 'day').format('dddd @ ha')}</b
+			>
 		</div>
 	{:else}
 		<h2>You'll need an invite to access this community</h2>
