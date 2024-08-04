@@ -1,22 +1,11 @@
 <script>
 	import { sfTimestamp } from '$lib/snowfake.js';
+	import Post from '$lib/Post.svelte';
 	import dayjs from 'dayjs';
 	import DJSRelativeTime from 'dayjs/plugin/relativeTime.js';
 	dayjs.extend(DJSRelativeTime);
 	export let data;
 	export let form;
-	const expandLength = 297;
-	const dotdotdot = '...';
-	function togglePost(i, content) {
-		if (document.getElementById('post-' + i).innerText.length === expandLength + dotdotdot.length) {
-			document.getElementById('post-' + i).innerText = content;
-			document.getElementById('expand-' + i).innerText = 'show less';
-		} else {
-			document.getElementById('expand-' + i).innerText = 'read more';
-			document.getElementById('post-' + i).innerText =
-				content.substring(0, expandLength) + dotdotdot;
-		}
-	}
 	function vacation() {
 		prompt('How many days would you like to go for?');
 	}
@@ -59,29 +48,8 @@
 			</form>
 		</div>
 		<div class="sMargin">
-			{#each data.posts as post, i}
-				<div class="post">
-					<div class="author">
-						{post.author} - {dayjs(sfTimestamp(post.id)).fromNow()}
-					</div>
-					{#if post.content.length > expandLength + 100}
-						<div class="content">
-							<div id="post-{i}">{post.content.substring(0, expandLength)}{dotdotdot}</div>
-							<button
-								class="smallButton"
-								id="expand-{i}"
-								on:click={() => {
-									togglePost(i, post.content);
-								}}>read more</button
-							>
-						</div>
-					{:else}
-						<div class="content">
-							{post.content}
-						</div>
-					{/if}
-					<div><a href="/replant/{post.id}">replant</a> - <a href="/chat/{post.id}">chat</a></div>
-				</div>
+			{#each data.posts as post}
+				<Post id={post.id} />
 			{/each}
 		</div>
 	{:else if data.invite}
@@ -104,22 +72,6 @@
 </div>
 
 <style>
-	.post {
-		font-size: 1.25rem;
-		padding: 0.2rem 0.4rem;
-		margin-top: 0.4rem;
-		width: 100%;
-		box-sizing: border-box;
-		background-color: hsl(0, 0%, 100%, 0.3);
-	}
-	.post .author {
-		font-family: silkscreen, 'Courier New', Courier, monospace;
-	}
-	.post .content {
-		white-space: pre-wrap;
-		font-family: tiny5, 'Courier New', Courier, monospace;
-		word-break: break-all;
-	}
 	textarea {
 		aspect-ratio: 4/3;
 		width: 100%;

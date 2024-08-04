@@ -20,4 +20,20 @@
 </script>
 
 <div class="post"></div>
-<div id="chat"></div>
+<div class="messageBox">
+	<input type="text" placeholder="message" />
+	<button>send</button>
+</div>
+<div id="chat" class="sMargin"></div>
+
+<style>
+	.messageBox * {
+		font-family: tiny5, monospace;
+		margin: none;
+		font-size: 1.25rem;
+	}
+	button {
+		border: none;
+		padding: 0.2rem 0.4rem;
+	}
+</style>
