@@ -5,38 +5,33 @@
 	dayjs.extend(DJSRelativeTime);
 	const expandLength = 297;
 	export let id;
+	export let post;
 	let expanded = false;
 	function toggleExpand() {
 		expanded = !expanded;
 	}
-	console.log(id);
 </script>
 
 <div class="post">
-	{#await async () => {
-		return (await fetch('/post?id=' + id)).json();
-	} then post}
-		<pre>{JSON.stringify(post)}</pre>
-		<div class="author">
-			{post.author} - {dayjs(sfTimestamp(post.id)).fromNow()}
+	<div class="author">
+		{post.author} - {dayjs(sfTimestamp(post.id)).fromNow()}
+	</div>
+	{#if expanded}
+		<div class="post">
+			<div class="content">{post.content}</div>
+			<button class="smallButton" on:click={toggleExpand}>show less</button>
 		</div>
-		{#if expanded}
-			<div class="post">
-				<div class="content">{post.content}</div>
-				<button class="smallButton" on:click={toggleExpand}>show less</button>
-			</div>
-		{:else if post.content.length > expandLength + 100}
-			<div class="content">
-				<div id="post">{post.content.substring(0, expandLength)}...</div>
-				<button class="smallButton" on:click={toggleExpand}>read more</button>
-			</div>
-		{:else}
-			<div class="content">
-				{post.content}
-			</div>
-		{/if}
-		<div><a href="/replant/{post.id}">replant</a> - <a href="/chat/{post.id}">chat</a></div>
-	{/await}
+	{:else if post.content.length > expandLength + 100}
+		<div class="content">
+			<div id="post">{post.content.substring(0, expandLength)}...</div>
+			<button class="smallButton" on:click={toggleExpand}>read more</button>
+		</div>
+	{:else}
+		<div class="content">
+			{post.content}
+		</div>
+	{/if}
+	<div><a href="/replant/{post.id}">replant</a> - <a href="/chat/{post.id}">chat</a></div>
 </div>
 
 <style>

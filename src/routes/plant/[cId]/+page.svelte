@@ -49,7 +49,7 @@
 		</div>
 		<div class="sMargin">
 			{#each data.posts as post}
-				<Post id={post.id} />
+				<Post {post} />
 			{/each}
 		</div>
 	{:else if data.invite}
