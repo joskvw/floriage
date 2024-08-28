@@ -5,9 +5,13 @@ a more plant-like social media platform
 ## social media sorta sucks
 
 my solution is simple: apply MAD (mutually assured destruction) to social media communities.\
-by giving every member of a community the option to instantly & permanently destroy that community, things will probably get better
+here's the plan:
 
-## Developing
+1. give every user the option to destroy (uproot) the community (plant) they are a part of\
+2. ???\
+3. a better, less evil social media platform!\
+
+## Developing / running floriage
 
 Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
