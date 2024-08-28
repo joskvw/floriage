@@ -7,9 +7,9 @@ a more plant-like social media platform
 my solution is simple: apply MAD (mutually assured destruction) to social media communities.\
 here's the plan:
 
-1. give every user the option to destroy (uproot) the community (plant) they are a part of\
-2. ???\
-3. a better, less evil social media platform!\
+1. give every user the option to destroy (uproot) the community (plant) they are a part of
+2. ???
+3. a better, less evil social media platform!
 
 ## Developing / running floriage
 
