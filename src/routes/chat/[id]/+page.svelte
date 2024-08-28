@@ -15,7 +15,13 @@
 				let msg = newMessages[i];
 				let msgEle = document.createElement('div');
 				msgEle.class = 'message';
-				msgEle.innerHTML = msg.content;
+				let authorEle = document.createElement('b');
+				authorEle.innerText = msg.authorName.toUpperCase() + ': ';
+				let contentEle = document.createElement('span');
+				contentEle.innerText = msg.content;
+				msgEle.append(authorEle);
+				msgEle.append(contentEle);
+				msgEle.append(document.createElement('hr'));
 				document.getElementById('chat').prepend(msgEle);
 			}
 			console.log(Date.now() + Object.keys(newMessages)[Object.keys(newMessages).length - 1]);

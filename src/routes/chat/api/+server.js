@@ -26,6 +26,9 @@ export async function POST({ request }) {
 	if (!user) {
 		return json({ success: false });
 	}
+	if (!chats[up.chat]) {
+		chats[up.chat] = {};
+	}
 	chats[up.chat][generateId()] = { authorName: user.username, content: b.content };
 	return json({ success: true });
 }

@@ -4,7 +4,6 @@
 	import DJSRelativeTime from 'dayjs/plugin/relativeTime.js';
 	dayjs.extend(DJSRelativeTime);
 	const expandLength = 297;
-	export let id;
 	export let post;
 	let expanded = false;
 	function toggleExpand() {
@@ -31,7 +30,7 @@
 			{post.content}
 		</div>
 	{/if}
-	<div><a href="/replant/{post.id}">replant</a> - <a href="/chat/{post.id}">chat</a></div>
+	<div><a href="/chat/{post.id}">chat</a></div>
 </div>
 
 <style>

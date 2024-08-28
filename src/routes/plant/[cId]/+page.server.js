@@ -84,10 +84,10 @@ export async function load({ params, cookies, url }) {
 	}
 }
 export const actions = {
-	vacation: async (event) => {
+	/*vacation: async (event) => {
 		let b = paramsToObject(await event.request.text());
 		let user = await getUser(await checkJwt(b.authToken));
-	},
+	},*/
 	uproot: async (event) => {
 		let b = paramsToObject(await event.request.text());
 		let user = await getUser(await checkJwt(b.authToken));
@@ -131,7 +131,10 @@ export const actions = {
 				creator: user.id
 			};
 			await db('invites').insert(invite);
-			return { success: true, inviteId: invite.id };
+			return {
+				success: true,
+				inviteLink: `https://floriage.online/plant/${invite.community}?invite=${invite.id}`
+			};
 		}
 	},
 	post: async (event) => {

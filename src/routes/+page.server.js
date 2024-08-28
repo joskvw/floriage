@@ -30,6 +30,7 @@ db.schema.hasTable('users').then(async function (exists) {
 		});
 	}
 });
+export { _takePassphrase };
 export const actions = {
 	login: async (event) => {
 		let b = paramsToObject(await event.request.text());
@@ -85,8 +86,7 @@ function givePassphrase(passphrase) {
 	passphraseMove[secretId] = passphrase;
 	return secretId;
 }
-export { takePassphrase };
-function takePassphrase(id) {
+function _takePassphrase(id) {
 	let passphrase = passphraseMove[id];
 	passphraseMove[id] = 'Hope you saved it!';
 	return passphrase;

@@ -16,7 +16,7 @@
 	{#if data.posts}
 		<h2>{data.name}</h2>
 		<div class="horizontalButtonGroup">
-			<button class="bigButton sMargin" id="vacationButton" on:click={vacation}>vacation</button>
+			<!--<button class="bigButton sMargin" id="vacationButton" on:click={vacation}>vacation</button>-->
 			<form action="?/uproot" method="post">
 				<input type="text" name="authToken" hidden value={data.authToken} />
 				<button class="bigButton sMargin" id="uprootButton">uproot</button>
@@ -24,18 +24,20 @@
 
 			<button class="bigButton sMargin" id="activeDisplay">{dayjs(data.pc.expiry).fromNow()}</button
 			>
+			<form action="?/invite" method="post">
+				<input type="text" name="authToken" hidden value={data.authToken} />
+				<button class="bigButton sMargin">create invite</button>
+			</form>
 		</div>
-		<form action="?/invite" method="post">
-			<input type="text" name="authToken" hidden value={data.authToken} />
-			<button class="bigButton sMargin">create invite</button>
-			{#if form && form.inviteId}
+
+		<div>
+			{#if form && form.inviteLink}
 				<div class="sMargin">
-					Your invite link: <small
-						>https://oops.test/plant/1722295862951?invite={form.inviteId}</small
-					>
+					<div>Your invite link:</div>
+					<small>{form.inviteLink}</small>
 				</div>
 			{/if}
-		</form>
+		</div>
 		<div class="sMargin">
 			<form method="post" action="?/post">
 				<textarea placeholder="u should say something" name="content" />

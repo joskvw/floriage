@@ -2,7 +2,7 @@ import knex from 'knex';
 import { checkJwt } from '$lib/token.js';
 import { generateId } from '$lib/snowfake.js';
 import { redirect } from '@sveltejs/kit';
-import { takePassphrase } from '../+page.server.js';
+import { _takePassphrase } from '../+page.server.js';
 import { paramsToObject } from '$lib/SPObject.js';
 import { getUser, getCommunity } from '$lib/dba.js';
 import dayjs from 'dayjs';
@@ -39,7 +39,7 @@ export async function load({ cookies, url }) {
 		}
 	}
 	if (paramsToObject(url.searchParams).onboard) {
-		d.passphrase = takePassphrase(paramsToObject(url.searchParams).onboard);
+		d.passphrase = _takePassphrase(paramsToObject(url.searchParams).onboard);
 	}
 	return d;
 }
